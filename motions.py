@@ -125,10 +125,12 @@ class motion_executioner(Node):
 
     # TODO Part 4: Motion functions: complete the functions to generate the proper messages corresponding to the desired motions of the robot
 
+    # Speed here are chosen based on simulator behaviour, will change accordingly during lab session
     def make_circular_twist(self):
-        self.spiral_counter = 0
+        self.spiral_counter = 0 # if in circular, reset spiral counter
         msg = Twist()
-        msg.angular.z = 0.7  # fill up the twist msg for circular motion
+        msg.linear.x = 0.2
+        msg.angular.z = 0.7
         return msg
 
     def make_spiral_twist(self):
@@ -140,7 +142,7 @@ class motion_executioner(Node):
         return msg
 
     def make_acc_line_twist(self):
-        self.spiral_counter = 0
+        self.spiral_counter = 0 # if in line, reset spiral counter
         msg = Twist()
         msg.linear.x = 0.5  # fill up the twist msg for line motion
         return msg
