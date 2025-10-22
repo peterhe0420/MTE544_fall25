@@ -37,12 +37,12 @@ class decision_maker(Node):
         # TODO Part 5: Tune your parameters here
     
         if motion_type == POINT_PLANNER:
-            self.controller=controller(klp=0.2, kli=0.2, klv=0.2, kap=0.2, kai=0.2, kav=0.2)
+            self.controller=controller(klp=100, kli=0.5, klv=0.2, kap=1.2, kai=0.5, kav=0.2)
             self.planner=planner(POINT_PLANNER)    
     
     
         elif motion_type==TRAJECTORY_PLANNER:
-            self.controller=trajectoryController(klp=0.2, kli=0.2, klv=0.2, kap=0.2, kai=0.2, kav=0.2)
+            self.controller=trajectoryController(klp=100, kli=0.5, klv=0.2, kap=1.0, kai=0.5, kav=0.35)
             self.planner=planner(TRAJECTORY_PLANNER)
 
         else:
@@ -75,11 +75,11 @@ class decision_maker(Node):
             # For trajectory planner, check if we've reached the final goal
             final_goal = self.goal[-1]
             linear_error = calculate_linear_error(self.localizer.getPose(), final_goal)
-            reached_goal = linear_error < 0.1  # 10cm tolerance
+            reached_goal = linear_error < 0.01  # 10cm tolerance
         else: 
             # For point planner, check if we've reached the single goal
             linear_error = calculate_linear_error(self.localizer.getPose(), self.goal)
-            reached_goal = linear_error < 0.1  # 10cm tolerance
+            reached_goal = linear_error < 0.01  # 10cm tolerance
 
             print("linear_error ", linear_error)
 
@@ -120,7 +120,7 @@ def main(args=None):
             publisher_msg=Twist(),
             publishing_topic="/cmd_vel",
             qos_publisher=odom_qos,
-            goalPoint=[-2, -2],  # Default goal point
+            goalPoint=[-1, -1],  # Default goal point
             rate=10,
             motion_type=POINT_PLANNER
         )
