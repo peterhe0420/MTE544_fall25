@@ -62,7 +62,7 @@ class decision_maker(Node):
     def timerCallback(self):
         
         # TODO Part 3: Run the localization node
-        spin_once(self.localizer)    # Remember that this file is already running the decision_maker node.
+        spin_once(self.localizer)    # this file is already running the decision_maker node.
 
         if self.localizer.getPose()  is  None:
             print("waiting for odom msgs ....")
