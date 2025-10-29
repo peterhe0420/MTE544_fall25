@@ -23,15 +23,18 @@ def plot_errors(filename):
     axes[0].plot([lin[0] for lin in values], [lin[1] for lin in values])
     axes[0].set_title("state space")
     axes[0].grid()
-
+    axes[0].set_xlabel('e [m]')
+    axes[0].set_ylabel('e-dot [m/ns]')
     
-    axes[1].set_title("each individual state")
+    axes[1].set_title("individual states")
     for i in range(0, len(headers) - 1):
         axes[1].plot(time_list, [lin[i] for lin in values], label= headers[i]+ " linear")
 
     axes[1].legend()
     axes[1].grid()
 
+    axes[1].set_xlabel('time [ns]')
+    axes[1].set_ylabel('state values [rad]')
     plt.show()
     
     

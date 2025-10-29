@@ -37,12 +37,12 @@ class decision_maker(Node):
         # TODO Part 5: Tune your parameters here
     
         if motion_type == POINT_PLANNER:
-            self.controller=controller(klp=100, kli=0.5, klv=0.2, kap=1.2, kai=0.5, kav=0.2)
+            self.controller=controller(klp=2, kli=0.5, klv=0.2, kap=1.2, kai=0.5, kav=0.2)
             self.planner=planner(POINT_PLANNER)    
     
     
         elif motion_type==TRAJECTORY_PLANNER:
-            self.controller=trajectoryController(klp=100, kli=0.5, klv=0.2, kap=1.0, kai=0.5, kav=0.35)
+            self.controller=trajectoryController(klp=2, kli=0.5, klv=0.2, kap=1.0, kai=0.5, kav=0.35)
             self.planner=planner(TRAJECTORY_PLANNER)
 
         else:
@@ -120,7 +120,7 @@ def main(args=None):
             publisher_msg=Twist(),
             publishing_topic="/cmd_vel",
             qos_publisher=odom_qos,
-            goalPoint=[-1, -1],  # Default goal point
+            goalPoint=[1,1],  # Default goal point
             rate=10,
             motion_type=POINT_PLANNER
         )

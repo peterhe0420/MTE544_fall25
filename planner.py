@@ -28,7 +28,6 @@ class planner:
         import math
 
         pts = []
-        # if self.trajectory_name == "parabola":
         ############ parabola ############
         # x0, x1 = 0.0, 1.5
         # num_points = 25
