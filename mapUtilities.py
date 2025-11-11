@@ -174,29 +174,36 @@ class mapManipulator(Node):
 
         from sklearn.neighbors import KDTree
         
+        #Extract occupied cells
+        # Finds all pixels that are “black” or near 0 intensity → occupied cells.
+        # indices_arr becomes an N×2 array of their (row, col) coordinates.
         indices = np.where(image_array < 10)
         indices_arr = np.array([indices[0], indices[1]]).T
         
+        # Convert cell indices of obstacles to positions in the map(world coordinate points)
+        # Builds a list of every cell’s coordinates (flattened grid).
+        # Converts them to real-world positions too.
         occupied_points = self.cell_2_position(indices_arr)
         all_indices = np.array([[i, j] for i in range(self.height) for j in range(self.width)])
         all_positions = self.cell_2_position(all_indices)
 
+        # KDTree lets you quickly query, for every map cell, how far it is from the nearest occupied cell.
+        # dists is a flat array of Euclidean distances
         kdt=KDTree(occupied_points)
-
         dists=kdt.query(all_positions, k=1)[0][:]
+        # Turn distances into probabilities. Uses a Gaussian model: closer to obstacles → higher likelihood
         probabilities=np.exp( -(dists**2) / (2*self.laser_sig**2))
         
+        # Converts the flattened probability array back into the original image grid shape
         likelihood_field=probabilities.reshape(image_array.shape)
-        
+
+        # Create a grayscale visualization
         likelihood_field_img=np.array(255-255*probabilities.reshape(image_array.shape), dtype=np.int32)
-        
         self.likelihood_img=likelihood_field_img
         
+        # Saves both the obstacle positions and the computed likelihood field in the class for later use
         self.occ_points=np.array(occupied_points)
-        
-                
-        #self.plot_pgm_image(likelihood_field_img)
-
+        # self.plot_pgm_image(likelihood_field_img)
         self.likelihood_field = likelihood_field
         
         return likelihood_field
