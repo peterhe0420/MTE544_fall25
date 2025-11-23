@@ -12,11 +12,13 @@ PARABOLA=0; SIGMOID=1
 
 class planner:
 
-    def __init__(self, type_, mapName="room"):
+    def __init__(self, type_, mapName="room", heuristic='euclidean'):
 
         self.type=type_
         self.mapName=mapName
+        self.heuristic = heuristic  # 'euclidean' or 'manhattan'
         ## TODO: Adjust the laser_sig value which decides the safety distance to obstacles
+        # laser_sig controls the safety distance - larger values mean safer paths further from obstacles
         self.m_utilites = mapManipulator(filename_=self.mapName, laser_sig=0.5)
         self.costMap = self.m_utilites.make_likelihood_field()
 
@@ -45,14 +47,15 @@ class planner:
         endPoseCart = np.array(endPoseCart)[:2]
 
         # TODO: Convert to pixel coordinates using the m_utilites
-        startPose = self.m_utilites...
-        endPose = self.m_utilites...
+        startPose = self.m_utilites.position_2_cell(startPoseCart)
+        endPose = self.m_utilites.position_2_cell(endPoseCart)
 
         # convert to tuple
-        startPose = (startPose[0], startPose[1])
-        endPose = (endPose[0], endPose[1])
+        startPose = (int(startPose[0]), int(startPose[1]))
+        endPose = (int(endPose[0]), int(endPose[1]))
         # TODO: Call the A* search algorithm
-        path = ...
+        # Use the heuristic specified in the planner initialization
+        path = search(self.costMap, startPose, endPose, heuristic=self.heuristic)
         if path is None:
             return None
         

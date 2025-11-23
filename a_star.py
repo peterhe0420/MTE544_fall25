@@ -47,15 +47,15 @@ def return_path(current_node, maze):
     return path
 
 
-def search(maze, start, end):
+def search(maze, start, end, heuristic='euclidean'):
     maze = maze.copy().T
 
     """
         Returns a list of tuples as a path from the given start to the given end in the given maze
         :param maze:
-        :param cost
         :param start:
         :param end:
+        :param heuristic: 'euclidean' or 'manhattan' - heuristic function to use
         :return:
     """
     # Get the shape of the maze
@@ -72,15 +72,19 @@ def search(maze, start, end):
     
     # TODO PART 4 Create start and end node with initized values for g, h and f
     # Use None as parent if not defined
-    start_node = Node(...)
-    start_node.g = ...     # cost from start Node
-    start_node.h = ...     # heuristic estimated cost to end Node
-    start_node.f = ...
+    start_node = Node(None, start)
+    start_node.g = 0     # cost from start Node (0 since it's the start)
+    # Calculate initial heuristic for start node
+    if heuristic == 'manhattan':
+        start_node.h = abs(start[0] - end[0]) + abs(start[1] - end[1])
+    else:  # euclidean
+        start_node.h = sqrt((start[0] - end[0])**2 + (start[1] - end[1])**2)
+    start_node.f = start_node.g + start_node.h     # f = g + h
 
-    end_node = Node(...)
-    end_node.g = ...       # set a large value if not defined
-    end_node.h = ...       # heuristic estimated cost to end Node
-    end_node.f = ...
+    end_node = Node(None, end)
+    end_node.g = float('inf')       # set a large value if not defined
+    end_node.h = 0       # heuristic estimated cost to end Node (0 since it's the goal)
+    end_node.f = float('inf')
 
     # Initialize both yet_to_visit and visited dictionary
     # in this dict we will put all node that are yet_to_visit for exploration.
@@ -140,8 +144,8 @@ def search(maze, start, end):
         current_fscore = None
         for position, node in yet_to_visit_dict.items():
             if current_fscore is None or node.f < current_fscore:
-                current_fscore = ...
-                current_node = ...
+                current_fscore = node.f
+                current_node = node
 
         # if we hit this point return the path such as it may be no solution or
         # computation cost is too high
@@ -167,7 +171,8 @@ def search(maze, start, end):
             node_position = (current_node.position[0] + new_position[0], current_node.position[1] + new_position[1])
 
             # TODO PART 4 Make sure within range (check if within maze boundary)
-            if (...):
+            if (node_position[0] < 0 or node_position[0] >= no_rows or 
+                node_position[1] < 0 or node_position[1] >= no_columns):
                 continue
 
             # Make sure walkable terrain
@@ -185,13 +190,29 @@ def search(maze, start, end):
         for child in children:
 
             # TODO PART 4 Child is on the visited dict (use get method to check if child is in visited dict, if not found then default value is False)
-            if ():
+            if visited_dict.get(child.position, False):
                 continue
 
             # TODO PART 4 Create the f, g, and h values
-            child.g = ...
-            # Heuristic costs calculated here, this is using eucledian distance
-            child.h = ...
+            # Calculate g: cost from start to current child node
+            # For diagonal moves, cost is sqrt(2), for cardinal moves, cost is 1
+            if abs(new_position[0]) == 1 and abs(new_position[1]) == 1:
+                # Diagonal move
+                child.g = current_node.g + sqrt(2)
+            else:
+                # Cardinal move (up, down, left, right)
+                child.g = current_node.g + 1
+            
+            # Heuristic costs calculated here
+            # Calculate heuristic based on the selected method
+            if heuristic == 'manhattan':
+                # Manhattan distance: |x1-x2| + |y1-y2|
+                child.h = abs(child.position[0] - end_node.position[0]) + \
+                         abs(child.position[1] - end_node.position[1])
+            else:  # default to euclidean
+                # Euclidean distance: sqrt((x1-x2)^2 + (y1-y2)^2)
+                child.h = sqrt((child.position[0] - end_node.position[0])**2 + 
+                              (child.position[1] - end_node.position[1])**2)
 
             child.f = child.g + child.h
 

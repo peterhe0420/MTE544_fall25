@@ -56,7 +56,9 @@ class decision_maker(Node):
             # TODO: adjust the PID gains and the lookAhead distance
             self.controller = trajectoryController(
                 klp=0.05, klv=0.2, kli=0.2, kap=0.8, kav=0.6, kai=0.2, lookAhead=3)
-            self.planner=planner(ASTAR_PLANNER, mapName="your_map/room.yaml")
+            # Initialize planner with heuristic: 'euclidean' or 'manhattan'
+            # Change heuristic here to switch between Manhattan and Euclidean distance
+            self.planner=planner(ASTAR_PLANNER, mapName="your_map/room.yaml", heuristic='euclidean')
         
         else:
             print("Error! you don't have this type of planner", file=sys.stderr)
